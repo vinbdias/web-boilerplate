@@ -3,21 +3,31 @@
 import { useState } from "react";
 import {
   Alert,
+  AutoComplete,
   Badge,
+  BigNumber,
+  Breadcrumb,
   Button,
   Card,
+  Checkbox,
   ConfirmDialog,
+  Drawer,
   EmptyState,
   FormField,
   Input,
   Modal,
   PaginationControls,
+  Radio,
+  RadioGroup,
+  SearchBar,
   Select,
   Skeleton,
   Spinner,
+  Switch,
   Table,
   Tabs,
   TextArea,
+  Tooltip,
   useToast,
 } from "@/components";
 import "./ShowcasePage.css";
@@ -36,14 +46,18 @@ const demoRows: DemoRow[] = [
 export function ShowcasePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [autoCompleteValue, setAutoCompleteValue] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const { showToast } = useToast();
 
   return (
     <div className="showcase">
       <h1 className="showcase__title">Component showcase</h1>
       <p className="showcase__subtitle">
-        Neutral building blocks. Restyle everything by editing <code>src/styles/tokens.css</code>.
+        Neutral building blocks. Restyle everything by editing the theme in{" "}
+        <code>src/styles/theme.ts</code> (colors, fonts, breakpoints).
       </p>
 
       <Card title="Buttons">
@@ -76,6 +90,68 @@ export function ShowcasePage() {
           <FormField label="Text area">
             {(fieldProps) => <TextArea {...fieldProps} rows={2} />}
           </FormField>
+          <FormField label="Date">
+            {(fieldProps) => <Input {...fieldProps} type="date" />}
+          </FormField>
+          <FormField label="Autocomplete" hint="Type to filter; arrows + Enter to pick">
+            {(fieldProps) => (
+              <AutoComplete
+                id={fieldProps.id}
+                aria-describedby={fieldProps["aria-describedby"]}
+                invalid={fieldProps.invalid}
+                placeholder="Pick a fruit"
+                options={[
+                  { value: "apple", label: "Apple" },
+                  { value: "banana", label: "Banana" },
+                  { value: "cherry", label: "Cherry" },
+                  { value: "grape", label: "Grape" },
+                ]}
+                value={autoCompleteValue}
+                onChange={setAutoCompleteValue}
+              />
+            )}
+          </FormField>
+        </div>
+        <div className="showcase__row" style={{ marginTop: "var(--space-4)" }}>
+          <Checkbox label="Checkbox option" defaultChecked />
+          <Switch label="Toggle switch" defaultChecked />
+        </div>
+        <div style={{ marginTop: "var(--space-4)" }}>
+          <RadioGroup label="Radio group">
+            <Radio name="demo-radio" label="First" defaultChecked />
+            <Radio name="demo-radio" label="Second" />
+            <Radio name="demo-radio" label="Third" />
+          </RadioGroup>
+        </div>
+      </Card>
+
+      <Card title="Navigation and search">
+        <div className="showcase__stack">
+          <Breadcrumb
+            items={[
+              { label: "Home", to: "/" },
+              { label: "Section", to: "/showcase" },
+              { label: "Current page" },
+            ]}
+          />
+          <div className="showcase__row">
+            <SearchBar onSearch={setSearchTerm} placeholder="Search anything…" />
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+              {searchTerm ? `Searching: ${searchTerm}` : "Debounced 300ms"}
+            </span>
+          </div>
+          <div className="showcase__row">
+            <Tooltip content="Extra context on hover or focus">
+              <Button variant="secondary">Hover me (tooltip)</Button>
+            </Tooltip>
+            <Button variant="secondary" onClick={() => setDrawerOpen(true)}>
+              Open drawer
+            </Button>
+          </div>
+          <div className="showcase__row">
+            <BigNumber value="1.284" label="Total records" hint="Example KPI display" />
+            <BigNumber value="98,2%" label="Uptime" />
+          </div>
         </div>
       </Card>
 
@@ -165,6 +241,10 @@ export function ShowcasePage() {
         onConfirm={() => setConfirmOpen(false)}
         onCancel={() => setConfirmOpen(false)}
       />
+
+      <Drawer open={drawerOpen} title="Example drawer" onClose={() => setDrawerOpen(false)}>
+        <p>Side panel for filters, details or secondary flows.</p>
+      </Drawer>
     </div>
   );
 }

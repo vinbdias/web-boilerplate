@@ -21,4 +21,4 @@ Invariants:
 - Raw DTOs never leave `api.ts`; components consume view models only.
 - Mutations invalidate via the key factory (`invalidateQueries({ queryKey: keys.lists() })`).
 - Validation errors from the API (`error.fields`) map back to the form with `setError`.
-- No tokens/PII in web storage; no hardcoded colors (tokens.css only).
+- No tokens/PII in web storage; no hardcoded colors (theme values from src/styles/theme.ts only).

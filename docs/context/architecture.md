@@ -36,8 +36,11 @@ Component
 
 ## UI kit
 
-Components in `src/components/` are domain-free and styled exclusively via
-`src/styles/tokens.css`. The `/showcase` route is the living styleguide.
+Components in `src/components/` are domain-free. All visual values come from
+the styled-components theme in `src/styles/theme.ts` (palette in `colors.ts`,
+typography in `fonts.ts`, `breakpoints.ts`), which `AppThemeProvider` also
+injects as CSS variables so plain-CSS components share the same tokens.
+The `/showcase` route is the living styleguide.
 
 ## PWA
 

@@ -1,4 +1,5 @@
-@import "./tokens.css";
+/* Design tokens are injected as CSS variables by AppThemeProvider
+   (src/styles/AppThemeProvider.tsx) from src/styles/theme.ts. */
 
 *,
 *::before,

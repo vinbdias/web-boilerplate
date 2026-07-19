@@ -1,0 +1,33 @@
+.ui-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+
+.ui-radio__input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.ui-radio-group {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ui-radio-group__legend {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: 0;
+  margin-bottom: var(--space-2);
+}
+
+.ui-radio-group__options {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}

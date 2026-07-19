@@ -2,7 +2,8 @@
 
 Generic, brand-free starting point for SPAs/PWAs backed by a REST API. The
 visual identity is intentionally neutral: retheme everything by editing the
-CSS variables in `src/styles/tokens.css`.
+theme modules in `src/styles/` (`theme.ts`, `colors.ts`, `fonts.ts`,
+`breakpoints.ts`).
 
 Pairs with the companion `api-boilerplate` (CakePHP REST API), but works with
 any backend that speaks the same envelope: `{ data, meta? }` on success and
@@ -13,7 +14,9 @@ any backend that speaks the same envelope: `{ data, meta? }` on success and
 - Vite + React 18 + TypeScript (strict, `noUncheckedIndexedAccess`)
 - React Router 7, TanStack Query 5, Axios
 - React Hook Form + Zod (schemas double as runtime DTO validation)
-- Plain CSS with design tokens (no CSS-in-JS dependency to replace later)
+- styled-components ThemeProvider with a typed theme (palette, typography,
+  breakpoints); the same theme is injected as CSS variables for the plain-CSS
+  component kit
 - PWA via `vite-plugin-pwa` (app-shell precache only; API responses are never
   cached by the service worker)
 - Vitest + Testing Library + MSW
@@ -31,7 +34,8 @@ src/
     projects/   # api.ts (DTO+schema+mapper), queries.ts (keys+hooks), pages
   pages/        # login, dashboard, 404, showcase
   app/          # providers, router, shell
-  styles/       # tokens.css (retheme here) + global.css
+  styles/       # theme.ts + colors.ts + fonts.ts + breakpoints.ts (retheme here)
+                # AppThemeProvider bridges the theme to CSS variables
 ```
 
 Key decisions:
@@ -77,6 +81,26 @@ The `add-web-feature` skill in `.cursor/skills/` walks through this checklist.
 
 ## Theming
 
-All colors, spacing, radii and typography live in `src/styles/tokens.css`.
-Adopting a brand = overriding that single file (plus `favicon.svg` and the
-PWA icons in `public/`).
+All colors, spacing, radii and typography live in the typed theme:
+
+- `src/styles/colors.ts` — palette (swap the accent for a brand primary)
+- `src/styles/fonts.ts` — families, sizes, weights
+- `src/styles/breakpoints.ts` — responsive helpers (`theme.breakpoints.up.md`)
+- `src/styles/theme.ts` — assembles everything (spacing, radii, shadows)
+
+`AppThemeProvider` provides the theme to styled-components and injects it as
+CSS variables, so both styling approaches consume identical values. Adopting a
+brand = editing those modules (plus `favicon.svg` and the PWA icons).
+
+```tsx
+import styled from "styled-components";
+
+const Highlight = styled.span`
+  color: ${({ theme }) => theme.colors.accent};
+  font-size: ${({ theme }) => theme.font.size.sm};
+
+  @media ${({ theme }) => theme.breakpoints.up.md} {
+    font-size: ${({ theme }) => theme.font.size.base};
+  }
+`;
+```

@@ -8,7 +8,7 @@ description: Add a new generic component to the neutral UI kit in src/components
 ```
 Progress:
 - [ ] 1. src/components/<Name>.tsx + <Name>.css (BEM-ish classes prefixed ui-)
-- [ ] 2. Style ONLY with variables from src/styles/tokens.css
+- [ ] 2. Style ONLY with the CSS variables injected from src/styles/theme.ts (via AppThemeProvider) or styled-components theme access
 - [ ] 3. Accessibility: label/aria wiring, keyboard support, visible focus (see FormField/Modal for patterns)
 - [ ] 4. Export from src/components/index.ts
 - [ ] 5. Add a demo section in src/pages/ShowcasePage.tsx

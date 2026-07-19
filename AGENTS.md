@@ -13,8 +13,10 @@ may ever be introduced.
   `localStorage`/`sessionStorage`.
 - Wire payloads are validated with Zod at the boundary (`features/*/api.ts`)
   and mapped to view models. UI components never consume raw DTOs.
-- All visual values come from `src/styles/tokens.css`. No hardcoded colors,
-  font sizes or spacing in components.
+- All visual values come from the theme (`src/styles/theme.ts`, with palette in
+  `colors.ts` and typography in `fonts.ts`), exposed both to styled-components
+  and as CSS variables by `AppThemeProvider`. No hardcoded colors, font sizes
+  or spacing in components.
 - The service worker precaches the app shell only; it must never cache
   authenticated API responses.
 
