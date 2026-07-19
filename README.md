@@ -13,10 +13,12 @@ any backend that speaks the same envelope: `{ data, meta? }` on success and
 
 - Vite + React 18 + TypeScript (strict, `noUncheckedIndexedAccess`)
 - React Router 7, TanStack Query 5, Axios
-- React Hook Form + Zod (schemas double as runtime DTO validation)
+- React Hook Form + Zod (schemas double as runtime DTO validation); Yup helpers
+  also available under `src/utils/validation/yupHelpers.ts`
 - styled-components ThemeProvider with a typed theme (palette, typography,
-  breakpoints); the same theme is injected as CSS variables for the plain-CSS
-  component kit
+  breakpoints); the same theme is injected as CSS variables for page-level CSS
+- FontAwesome via typed `FaIcon` + `src/icons` map (no direct FA imports in features)
+- dayjs + vanilla-masker for dates/masks
 - PWA via `vite-plugin-pwa` (app-shell precache only; API responses are never
   cached by the service worker)
 - Vitest + Testing Library + MSW
@@ -28,7 +30,14 @@ src/
   api/          # axios client (in-memory access token, single-flight refresh)
                 # callApi: typed, never-throwing result union + ApiError for queries
   auth/         # AuthProvider (rehydration via /auth/refresh), RequireAuth guard
+  contexts/     # AppRefresh, promise-based ConfirmDialog
   queries/      # query client defaults + cache profiles by volatility
+  hooks/        # useDebouncedSearch, usePortalAnchor, useScrollLock, …
+  utils/        # date, mask, string, formatBackendErrors, yupHelpers, zodHelpers
+  icons/        # friendly-name → FontAwesome iconMap (+ FaIcon typing)
+  search/       # curried search factories (searchXFn(config) => (query) => …)
+  models/       # UI-shaped types (TableRow / TableHeaders) — display layer
+  mappers/      # pure API/view-model → model converters
   components/   # neutral UI kit, one folder per component (index.tsx + styles.ts); see /showcase
   features/     # one folder per domain feature (projects = example, replace it)
     projects/   # api.ts (DTO+schema+mapper), queries.ts (keys+hooks), pages

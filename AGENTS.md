@@ -12,11 +12,12 @@ may ever be introduced.
 - Access tokens live in memory only. Never persist tokens or user data in
   `localStorage`/`sessionStorage`.
 - Wire payloads are validated with Zod at the boundary (`features/*/api.ts`)
-  and mapped to view models. UI components never consume raw DTOs.
-- All visual values come from the theme (`src/styles/theme.ts`, with palette in
-  `colors.ts` and typography in `fonts.ts`), exposed both to styled-components
-  and as CSS variables by `AppThemeProvider`. No hardcoded colors, font sizes
-  or spacing in components.
+  and mapped to view models / table rows via `src/mappers`. UI never consumes raw DTOs.
+- All visual values come from the theme (`src/styles/theme.ts`). Components use
+  styled-components (`index.tsx` + `styles.ts` per folder). CSS variables from
+  `AppThemeProvider` are for page-level plain CSS only.
+- Icons go through `FaIcon` + `src/icons` (`iconMap`). Do not import FontAwesome
+  icons directly in feature code.
 - The service worker precaches the app shell only; it must never cache
   authenticated API responses.
 
@@ -28,12 +29,26 @@ yarn lint && yarn typecheck && yarn test && yarn build   # full verification
 ```
 
 ## Layout (where things go)
-- HTTP + auth plumbing: `src/api/` (don't fork the axios client; extend it)
-- Session lifecycle: `src/auth/AuthContext.tsx` (rehydrates via /auth/refresh)
-- Server state: feature `queries.ts` with key factories + `src/queries/cacheProfiles.ts`
-- UI kit: `src/components/` (generic only; feature UI lives in the feature folder)
-- Features: `src/features/<name>/` with `api.ts`, `queries.ts`, pages
-- Routes: `src/app/router.tsx` (lazy for non-core pages)
+- HTTP + auth plumbing: `src/api/`
+- Session lifecycle: `src/auth/AuthContext.tsx`
+- Shared contexts: `src/contexts/` (`AppRefresh`, promise `ConfirmDialog`)
+- Server state: feature `queries.ts` + `src/queries/cacheProfiles.ts`
+- UI kit: `src/components/<Name>/{index.tsx,styles.ts}`
+- Icons: `src/icons` + `FaIcon` / `FaRawIcon`
+- Hooks: `src/hooks/` (debounce, portal anchor, scroll lock, backend errors, …)
+- Utils: `src/utils/` (date, mask, string, api errors, yupHelpers, zodHelpers)
+- Search factories: `src/search/` (`searchXFn(config) => (query) => Promise<TApi[]>`)
+- UI models: `src/models/<Domain>/` (table rows/headers — display shapes)
+- Mappers: `src/mappers/<domain>/` (API/view-model → model)
+- Features: `src/features/<name>/`
+- Routes: `src/app/router.tsx`
+
+## Patterns to reuse
+- **Search**: factory in `src/search` + mapper + `SearchBarAdvanced` / `SearchBarTable`
+- **Tables**: `TableData` + `TableHeaders` with `renderCell` + model row types
+- **DTO pipeline**: API DTO (Zod) → view model → table/search model via mappers
+- **Feedback**: `useSnackbar()` queue; `await confirm()` from `useConfirmDialog()`
+- **Dates**: `DatePicker` / `DateRangePicker` (DD/MM/YYYY, portal calendar)
 
 ## Definition of done
 - `yarn lint`, `yarn typecheck`, `yarn test` and `yarn build` all pass.

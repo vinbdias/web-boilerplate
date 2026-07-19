@@ -6,7 +6,7 @@ import {
   PaginationControls,
   Skeleton,
   Table,
-  useToast,
+  useSnackbar,
   type Column,
 } from "@/components";
 import { ApiError } from "@/api/callApi";
@@ -29,7 +29,7 @@ export function ProjectsPage() {
 
   const { data, isPending, isError, error } = useProjects({ page, limit: 10, sort: "name" });
   const deleteMutation = useDeleteProject();
-  const { showToast } = useToast();
+  const { showSnackbar } = useSnackbar();
 
   const columns: Column<Project>[] = [
     { key: "name", header: "Name", render: (project) => project.name },
@@ -111,10 +111,10 @@ export function ProjectsPage() {
           if (!deleting) return;
           deleteMutation.mutate(deleting.id, {
             onSuccess: () => {
-              showToast("Project deleted.", "success");
+              showSnackbar("Project deleted.", "success");
               setDeleting(null);
             },
-            onError: () => showToast("Failed to delete project.", "danger"),
+            onError: () => showSnackbar("Failed to delete project.", "error"),
           });
         }}
       />

@@ -2,7 +2,8 @@ import { RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { AuthProvider } from "@/auth/AuthContext";
-import { ErrorBoundary, ToastProvider } from "@/components";
+import { ErrorBoundary, SnackbarProvider } from "@/components";
+import { AppRefreshProvider, ConfirmDialogProvider } from "@/contexts";
 import { createQueryClient } from "@/queries/queryClient";
 import { AppThemeProvider } from "@/styles/AppThemeProvider";
 import { router } from "./router";
@@ -14,11 +15,15 @@ export function App() {
     <AppThemeProvider>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <ToastProvider>
-            <AuthProvider>
-              <RouterProvider router={router} />
-            </AuthProvider>
-          </ToastProvider>
+          <AppRefreshProvider>
+            <SnackbarProvider>
+              <ConfirmDialogProvider>
+                <AuthProvider>
+                  <RouterProvider router={router} />
+                </AuthProvider>
+              </ConfirmDialogProvider>
+            </SnackbarProvider>
+          </AppRefreshProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </AppThemeProvider>

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, FormField, Input, Modal, Select, TextArea, useToast } from "@/components";
+import { Button, FormField, Input, Modal, Select, TextArea, useSnackbar } from "@/components";
 import { ApiError } from "@/api/callApi";
 import type { Project } from "./api";
 import { useCreateProject, useUpdateProject } from "./queries";
@@ -23,7 +23,7 @@ interface ProjectFormModalProps {
 
 export function ProjectFormModal({ open, project, onClose }: ProjectFormModalProps) {
   const isEdit = project !== null;
-  const { showToast } = useToast();
+  const { showSnackbar } = useSnackbar();
 
   const createMutation = useCreateProject();
   const updateMutation = useUpdateProject(project?.id ?? 0);
@@ -53,7 +53,7 @@ export function ProjectFormModal({ open, project, onClose }: ProjectFormModalPro
   const onSubmit = handleSubmit((values) => {
     mutation.mutate(values, {
       onSuccess: () => {
-        showToast(isEdit ? "Project updated." : "Project created.", "success");
+        showSnackbar(isEdit ? "Project updated." : "Project created.", "success");
         onClose();
       },
       onError: (error) => {
@@ -66,7 +66,7 @@ export function ProjectFormModal({ open, project, onClose }: ProjectFormModalPro
             }
           }
         } else {
-          showToast("Failed to save project.", "danger");
+          showSnackbar("Failed to save project.", "error");
         }
       },
     });

@@ -11,6 +11,10 @@ alwaysApply: false
 - Query keys come from per-feature key factories (see `projectKeys`). Invalidate by prefix, not by refetching manually.
 - Choose a cache profile (`static | long | medium | short`) for every query based on data volatility.
 - Forms: React Hook Form + Zod resolver; map API `validation_failed` field errors back with `setError` (see `ProjectFormModal`).
-- Each component in `src/components/` is a folder with `index.tsx` (markup + logic) and `styles.ts` (styled-components). Style via the typed theme (`${({ theme }) => theme.colors.accent}`); use transient props (`$variant`, `$active`) for styling flags. Do not add per-component `.css` files.
+- Components in `src/components/` are folders with `index.tsx` + `styles.ts` (styled-components + typed theme). Use transient props (`$variant`, `$active`) for styling flags.
+- Icons: register in `src/icons` `iconMap`, consume via `FaIcon`. Never import `@fortawesome/*` icons in feature code.
+- Search UIs: put curried factories in `src/search`, mappers in `src/mappers`, wire to `SearchBarAdvanced` / `SearchBarTable` via `useDebouncedSearch`.
+- Dataset tables: prefer `TableData` + `TableHeaders`/`TableRow` models over ad-hoc markup.
+- Feedback: `useSnackbar()` for toasts; `await confirm()` from `useConfirmDialog()` for destructive actions.
 - Components in `src/components/` must be accessible: label associations, `role`/`aria-*` on feedback, keyboard operability. New ones get a test and a showcase entry.
 - Route-level code splitting with `lazy()` for pages outside the core shell.

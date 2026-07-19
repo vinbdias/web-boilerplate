@@ -1,6 +1,5 @@
-// Living showcase of the neutral component kit. Useful while restyling the
-// tokens for a new visual identity.
-import { useState } from "react";
+// Living showcase of the neutral component kit and shared infrastructure patterns.
+import { useMemo, useState } from "react";
 import {
   Alert,
   AutoComplete,
@@ -10,9 +9,11 @@ import {
   Button,
   Card,
   Checkbox,
-  ConfirmDialog,
+  DatePicker,
+  DateRangePicker,
   Drawer,
   EmptyState,
+  FaIcon,
   FormField,
   Input,
   Modal,
@@ -20,16 +21,23 @@ import {
   Radio,
   RadioGroup,
   SearchBar,
+  SearchBarAdvanced,
+  SearchBarTable,
   Select,
   Skeleton,
   Spinner,
   Switch,
   Table,
+  TableData,
   Tabs,
   TextArea,
   Tooltip,
-  useToast,
+  useSnackbar,
+  type DateRange,
 } from "@/components";
+import { useConfirmDialog } from "@/contexts";
+import { ProjectTableHeaders } from "@/models/Project";
+import type { SearchResultItem } from "@/types";
 import "./ShowcasePage.css";
 
 interface DemoRow {
@@ -43,14 +51,46 @@ const demoRows: DemoRow[] = [
   { id: 2, name: "Second item", status: "draft" },
 ];
 
+const demoProjects = [
+  { id: 1, name: "Alpha", status: "active", description: "First demo project", createdAt: "01/01/2026" },
+  { id: 2, name: "Bravo", status: "draft", description: "Second demo project", createdAt: "15/02/2026" },
+  { id: 3, name: "Charlie", status: "archived", description: "Third demo project", createdAt: "10/03/2026" },
+];
+
+async function searchDemoProjects(query: string) {
+  await new Promise((r) => setTimeout(r, 200));
+  const term = query.toLowerCase();
+  return demoProjects.filter((p) => p.name.toLowerCase().includes(term));
+}
+
+function mapDemoToSearchItem(item: (typeof demoProjects)[number]): SearchResultItem {
+  return { id: item.id, label: item.name, description: item.status, payload: item };
+}
+
+function mapDemoToTableRow(item: (typeof demoProjects)[number]) {
+  return {
+    id: item.id,
+    name: item.name,
+    status: item.status as "draft" | "active" | "archived",
+    statusLabel: item.status,
+    description: item.description,
+    createdAt: item.createdAt,
+  };
+}
+
 export function ShowcasePage() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [autoCompleteValue, setAutoCompleteValue] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const { showToast } = useToast();
+  const [date, setDate] = useState("");
+  const [range, setRange] = useState<DateRange>({ startDate: null, endDate: null });
+  const [selectedSearch, setSelectedSearch] = useState("");
+  const { showSnackbar } = useSnackbar();
+  const { confirm } = useConfirmDialog();
+
+  const tableRows = useMemo(() => demoProjects.map(mapDemoToTableRow), []);
 
   return (
     <div className="showcase">
@@ -60,7 +100,7 @@ export function ShowcasePage() {
         <code>src/styles/theme.ts</code> (colors, fonts, breakpoints).
       </p>
 
-      <Card title="Buttons">
+      <Card title="Buttons & icons">
         <div className="showcase__row">
           <Button>Primary</Button>
           <Button variant="secondary">Secondary</Button>
@@ -68,6 +108,16 @@ export function ShowcasePage() {
           <Button variant="danger">Danger</Button>
           <Button loading>Loading</Button>
           <Button disabled>Disabled</Button>
+        </div>
+        <div className="showcase__row" style={{ marginTop: "var(--space-3)" }}>
+          <FaIcon name="home" />
+          <FaIcon name="user" />
+          <FaIcon name="gear" />
+          <FaIcon name="bell" />
+          <FaIcon name="magnifyingGlass" />
+          <Button variant="secondary">
+            <FaIcon name="plus" size="sm" /> Add
+          </Button>
         </div>
       </Card>
 
@@ -90,8 +140,11 @@ export function ShowcasePage() {
           <FormField label="Text area">
             {(fieldProps) => <TextArea {...fieldProps} rows={2} />}
           </FormField>
-          <FormField label="Date">
-            {(fieldProps) => <Input {...fieldProps} type="date" />}
+          <FormField label="DatePicker">
+            {() => <DatePicker value={date} onChange={setDate} />}
+          </FormField>
+          <FormField label="DateRangePicker">
+            {() => <DateRangePicker value={range} onClose={setRange} />}
           </FormField>
           <FormField label="Autocomplete" hint="Type to filter; arrows + Enter to pick">
             {(fieldProps) => (
@@ -104,7 +157,6 @@ export function ShowcasePage() {
                   { value: "apple", label: "Apple" },
                   { value: "banana", label: "Banana" },
                   { value: "cherry", label: "Cherry" },
-                  { value: "grape", label: "Grape" },
                 ]}
                 value={autoCompleteValue}
                 onChange={setAutoCompleteValue}
@@ -125,7 +177,35 @@ export function ShowcasePage() {
         </div>
       </Card>
 
-      <Card title="Navigation and search">
+      <Card title="Search factories (SearchBarAdvanced / SearchBarTable)">
+        <div className="showcase__stack">
+          <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-secondary)" }}>
+            Pattern: <code>searchFn(config) → (query) → Promise&lt;TApi[]&gt;</code> + mapper → UI DTO.
+            Selected: {selectedSearch || "—"}
+          </p>
+          <SearchBarAdvanced
+            placeholder="Search projects (list)…"
+            searchFn={searchDemoProjects}
+            mapper={mapDemoToSearchItem}
+            onSelect={(item) => setSelectedSearch(item.label)}
+          />
+          <SearchBarTable
+            placeholder="Search projects (table)…"
+            searchFn={searchDemoProjects}
+            mapper={mapDemoToTableRow}
+            headers={ProjectTableHeaders}
+            onSelect={(item) => setSelectedSearch(String(item.name))}
+          />
+          <div className="showcase__row">
+            <SearchBar onSearch={setSearchTerm} placeholder="Simple debounced search…" />
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
+              {searchTerm ? `Searching: ${searchTerm}` : "Debounced 300ms"}
+            </span>
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Navigation">
         <div className="showcase__stack">
           <Breadcrumb
             items={[
@@ -134,12 +214,6 @@ export function ShowcasePage() {
               { label: "Current page" },
             ]}
           />
-          <div className="showcase__row">
-            <SearchBar onSearch={setSearchTerm} placeholder="Search anything…" />
-            <span style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>
-              {searchTerm ? `Searching: ${searchTerm}` : "Debounced 300ms"}
-            </span>
-          </div>
           <div className="showcase__row">
             <Tooltip content="Extra context on hover or focus">
               <Button variant="secondary">Hover me (tooltip)</Button>
@@ -155,7 +229,7 @@ export function ShowcasePage() {
         </div>
       </Card>
 
-      <Card title="Feedback">
+      <Card title="Feedback (Snackbar + promise ConfirmDialog)">
         <div className="showcase__stack">
           <div className="showcase__row">
             <Badge>Neutral</Badge>
@@ -167,18 +241,28 @@ export function ShowcasePage() {
           <Alert tone="info" title="Information">
             Alerts communicate contextual state.
           </Alert>
-          <Alert tone="danger" title="Something failed">
-            Use the danger tone for blocking errors.
-          </Alert>
           <div className="showcase__row">
-            <Button variant="secondary" onClick={() => showToast("Toast message!", "success")}>
-              Show toast
+            <Button
+              variant="secondary"
+              onClick={() => showSnackbar("Saved successfully.", "success")}
+            >
+              Show snackbar
             </Button>
             <Button variant="secondary" onClick={() => setModalOpen(true)}>
               Open modal
             </Button>
-            <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
-              Open confirm
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const ok = await confirm({
+                  title: "Delete item?",
+                  message: "Promise-based confirm via useConfirmDialog().",
+                  danger: true,
+                });
+                showSnackbar(ok ? "Confirmed." : "Cancelled.", ok ? "success" : "info");
+              }}
+            >
+              Await confirm()
             </Button>
           </div>
           <div className="showcase__row">
@@ -194,8 +278,16 @@ export function ShowcasePage() {
         </div>
       </Card>
 
-      <Card title="Data display">
+      <Card title="TableData (configurable headers + sort + pagination)">
         <div className="showcase__stack">
+          <TableData
+            title="Projects"
+            data={tableRows}
+            headers={ProjectTableHeaders}
+            usability="internal-pagination"
+            pageSize={2}
+            showRowColorBar
+          />
           <Table<DemoRow>
             columns={[
               { key: "name", header: "Name", render: (row) => row.name },
@@ -226,21 +318,10 @@ export function ShowcasePage() {
         open={modalOpen}
         title="Example modal"
         onClose={() => setModalOpen(false)}
-        footer={
-          <Button onClick={() => setModalOpen(false)}>Close</Button>
-        }
+        footer={<Button onClick={() => setModalOpen(false)}>Close</Button>}
       >
         <p>Built on the native dialog element: focus trap and Escape included.</p>
       </Modal>
-
-      <ConfirmDialog
-        open={confirmOpen}
-        title="Confirm action"
-        message="This is what a destructive confirmation looks like."
-        danger
-        onConfirm={() => setConfirmOpen(false)}
-        onCancel={() => setConfirmOpen(false)}
-      />
 
       <Drawer open={drawerOpen} title="Example drawer" onClose={() => setDrawerOpen(false)}>
         <p>Side panel for filters, details or secondary flows.</p>
