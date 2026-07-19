@@ -29,7 +29,7 @@ src/
                 # callApi: typed, never-throwing result union + ApiError for queries
   auth/         # AuthProvider (rehydration via /auth/refresh), RequireAuth guard
   queries/      # query client defaults + cache profiles by volatility
-  components/   # neutral UI kit (see /showcase route)
+  components/   # neutral UI kit, one folder per component (index.tsx + styles.ts); see /showcase
   features/     # one folder per domain feature (projects = example, replace it)
     projects/   # api.ts (DTO+schema+mapper), queries.ts (keys+hooks), pages
   pages/        # login, dashboard, 404, showcase
