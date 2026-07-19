@@ -16,7 +16,9 @@ import {
   FaIcon,
   FormField,
   Input,
+  InlineLoader,
   Modal,
+  OverlayLoader,
   PaginationControls,
   Radio,
   RadioGroup,
@@ -25,6 +27,7 @@ import {
   SearchBarTable,
   Select,
   Skeleton,
+  SkeletonLoader,
   Spinner,
   Switch,
   Table,
@@ -87,6 +90,7 @@ export function ShowcasePage() {
   const [date, setDate] = useState("");
   const [range, setRange] = useState<DateRange>({ startDate: null, endDate: null });
   const [selectedSearch, setSelectedSearch] = useState("");
+  const [showOverlay, setShowOverlay] = useState(true);
   const { showSnackbar } = useSnackbar();
   const { confirm } = useConfirmDialog();
 
@@ -269,11 +273,28 @@ export function ShowcasePage() {
             <Spinner size="sm" />
             <Spinner size="md" />
             <Spinner size="lg" label="Loading data" />
+            <span>
+              Inline value: <InlineLoader label="Loading value" />
+            </span>
           </div>
           <div className="showcase__stack">
             <Skeleton height="1rem" width="60%" />
             <Skeleton height="1rem" width="80%" />
             <Skeleton height="2.5rem" />
+            <SkeletonLoader width="45%" height={16} radius="999px" />
+          </div>
+          <div>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setShowOverlay((visible) => !visible)}
+            >
+              {showOverlay ? "Hide" : "Show"} container overlay
+            </Button>
+            <div className="showcase__loader-demo">
+              <p>Container content remains in place while an operation runs.</p>
+              <OverlayLoader loading={showOverlay} text="Loading section…" />
+            </div>
           </div>
         </div>
       </Card>

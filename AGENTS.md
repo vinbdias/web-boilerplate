@@ -49,6 +49,8 @@ yarn lint && yarn typecheck && yarn test && yarn build   # full verification
 - **DTO pipeline**: API DTO (Zod) → view model → table/search model via mappers
 - **Feedback**: `useSnackbar()` queue; `await confirm()` from `useConfirmDialog()`
 - **Dates**: `DatePicker` / `DateRangePicker` (DD/MM/YYYY, portal calendar)
+- **Loading states**: `InlineLoader` for compact values, `SkeletonLoader` for layout placeholders,
+  and `OverlayLoader` for blocking a positioned container or the full viewport
 
 ## Definition of done
 - `yarn lint`, `yarn typecheck`, `yarn test` and `yarn build` all pass.
