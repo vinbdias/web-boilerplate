@@ -1,0 +1,27 @@
+.dashboard__title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.dashboard__subtitle {
+  color: var(--color-text-secondary);
+  margin-top: var(--space-2);
+}
+
+.dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.dashboard__big-number {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.dashboard__card-hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin-top: var(--space-1);
+}

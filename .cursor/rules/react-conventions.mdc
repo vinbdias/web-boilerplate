@@ -1,0 +1,15 @@
+---
+description: React and TypeScript conventions for this codebase
+globs: "**/*.tsx,**/*.ts"
+alwaysApply: false
+---
+
+# React/TS Conventions
+
+- Strict TS: no `any` (ESLint enforces), no non-null assertions outside `main.tsx`.
+- Server state belongs to TanStack Query; React context is for session/UI state only. Never copy query data into useState.
+- Query keys come from per-feature key factories (see `projectKeys`). Invalidate by prefix, not by refetching manually.
+- Choose a cache profile (`static | long | medium | short`) for every query based on data volatility.
+- Forms: React Hook Form + Zod resolver; map API `validation_failed` field errors back with `setError` (see `ProjectFormModal`).
+- Components in `src/components/` must be accessible: label associations, `role`/`aria-*` on feedback, keyboard operability. New ones get a test and a showcase entry.
+- Route-level code splitting with `lazy()` for pages outside the core shell.

@@ -1,0 +1,33 @@
+.showcase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.showcase__title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.showcase__subtitle {
+  color: var(--color-text-secondary);
+}
+
+.showcase__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.showcase__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.showcase__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}

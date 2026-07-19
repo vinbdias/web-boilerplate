@@ -1,0 +1,12 @@
+---
+description: Core principles for this generic SPA/PWA boilerplate
+alwaysApply: true
+---
+
+# Foundations
+
+- This is a **generic boilerplate**: all data, names and endpoints must remain fictitious. Never introduce content from proprietary or third-party projects.
+- Security invariants: access token in memory only; refresh via HttpOnly cookie handled by the API; no tokens or PII in web storage; the service worker never caches `/api` responses.
+- Data flow is fixed: axios client → `callApi` result union → feature `api.ts` (Zod schema + mapper) → `queries.ts` hooks → components. Do not bypass layers.
+- Styling comes exclusively from `src/styles/tokens.css` variables. Components must be rethemeable by editing tokens alone.
+- The example feature is `src/features/projects`; use it as the template for new features and keep it compilable.

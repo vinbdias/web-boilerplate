@@ -1,0 +1,37 @@
+.projects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.projects__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.projects__title {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.projects__loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.projects__error {
+  color: var(--color-danger);
+}
+
+.projects__muted {
+  color: var(--color-text-muted);
+}
+
+.projects__row-actions {
+  display: flex;
+  gap: var(--space-1);
+  justify-content: flex-end;
+}
